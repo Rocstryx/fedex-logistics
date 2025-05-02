@@ -3,14 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FedEx RP - Connexion</title>
-
-  <!-- Firebase SDK -->
+  <title>FedEx RP - Catalogue</title>
+  <!-- Liens vers CSS et JS de Firebase et des bibliothèques -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #101010;
+      color: #f1f1f1;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #0f0f0f;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 30px;
+      color: #ff8000;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #1c1c1c;
+      border-radius: 10px;
+    }
+    .catalogue {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .product {
+      background-color: #292929;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .product img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    .product h3 {
+      color: #ff8000;
+    }
+    .product p {
+      color: #ddd;
+    }
+    button {
+      background-color: #ff8000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #e07b00;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #0f0f0f;
+      color: #888;
+    }
+  </style>
+</head>
 
+<body>
+
+  <header>
+    <h1>FedEx RP - Catalogue</h1>
+    <p>Bienvenue dans le catalogue de produits FedEx RP</p>
+  </header>
+
+  <div class="container">
+    <h2>Nos Produits</h2>
+
+    <div class="catalogue">
+      <!-- Exemple de produit -->
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Produit 1">
+        <h3>Armes de poing</h3>
+        <p>Haute qualité pour un usage RP</p>
+        <button>Ajouter au panier</button>
+      </div>
+
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Produit 2">
+        <h3>Cartouches</h3>
+        <p>Livraison rapide et fiable</p>
+        <button>Ajouter au panier</button>
+      </div>
+
+      <!-- Ajoute d'autres produits ici -->
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 FedEx RP - Tous droits réservés</p>
+  </footer>
+
+  <!-- Scripts Firebase -->
   <script>
-    // Ton vrai bloc Firebase
+    // Initialisation Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCZP__MEkfijdjW7rf_uau3dFtFL4jjhj0",
       authDomain: "fedex-logistics-8f671.firebaseapp.com",
@@ -20,65 +122,10 @@
       appId: "1:116664376043:web:8d04276a22e9538c187cae"
     };
     firebase.initializeApp(firebaseConfig);
+
+    // Exemple de gestion des utilisateurs
     const auth = firebase.auth();
-  </script>
-
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 30px; }
-    input, button { margin: 5px; padding: 10px; width: 80%; }
-    .container { max-width: 400px; margin: auto; border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h1>Connexion / Inscription</h1>
-    <h2>Créer un compte</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Mot de passe" />
-    <button onclick="register()">S'inscrire</button>
-
-    <h2>Connexion</h2>
-    <input type="email" id="loginEmail" placeholder="Email" />
-    <input type="password" id="loginPassword" placeholder="Mot de passe" />
-    <button onclick="login()">Se connecter</button>
-
-    <p id="userInfo">Non connecté</p>
-    <button onclick="logout()">Déconnexion</button>
-  </div>
-
-  <script>
-    function register() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => alert("Compte créé"))
-        .catch(error => alert("Erreur : " + error.message));
-    }
-
-    function login() {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(user => {
-          document.getElementById("userInfo").innerText = "Connecté : " + user.user.email;
-        })
-        .catch(error => alert("Erreur : " + error.message));
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        document.getElementById("userInfo").innerText = "Déconnecté";
-      });
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("userInfo").innerText = "Connecté : " + user.email;
-      } else {
-        document.getElementById("userInfo").innerText = "Non connecté";
-      }
-    });
+    const db = firebase.firestore();
   </script>
 
 </body>
