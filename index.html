@@ -4,11 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FedEx RP - Catalogue</title>
-  <!-- Liens vers CSS et JS de Firebase et des bibliothèques -->
+
+  <!-- Liens vers les icônes de FontAwesome (pour les icônes sociales, etc.) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,15 +21,18 @@
       margin: 0;
       padding: 0;
     }
+
     header {
       background-color: #0f0f0f;
       padding: 15px;
       text-align: center;
     }
+
     header h1 {
       font-size: 30px;
       color: #ff8000;
     }
+
     .container {
       max-width: 1200px;
       margin: 30px auto;
@@ -33,28 +40,34 @@
       background-color: #1c1c1c;
       border-radius: 10px;
     }
+
     .catalogue {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
+
     .product {
       background-color: #292929;
       padding: 20px;
       border-radius: 5px;
       text-align: center;
     }
+
     .product img {
       width: 100%;
       height: auto;
       border-radius: 5px;
     }
+
     .product h3 {
       color: #ff8000;
     }
+
     .product p {
       color: #ddd;
     }
+
     button {
       background-color: #ff8000;
       color: white;
@@ -64,9 +77,11 @@
       border-radius: 5px;
       transition: background 0.3s;
     }
+
     button:hover {
       background-color: #e07b00;
     }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -81,13 +96,16 @@
   <header>
     <h1>FedEx RP - Catalogue</h1>
     <p>Bienvenue dans le catalogue de produits FedEx RP</p>
+    <!-- Boutons de connexion/inscription (optionnel pour la page de connexion) -->
+    <button onclick="showLoginForm()">Connexion</button>
+    <button onclick="showRegisterForm()">Inscription</button>
   </header>
 
   <div class="container">
     <h2>Nos Produits</h2>
 
-    <div class="catalogue">
-      <!-- Exemple de produit -->
+    <div class="catalogue" id="productCatalog">
+      <!-- Exemple de produit statique -->
       <div class="product">
         <img src="https://via.placeholder.com/300" alt="Produit 1">
         <h3>Armes de poing</h3>
@@ -102,7 +120,7 @@
         <button>Ajouter au panier</button>
       </div>
 
-      <!-- Ajoute d'autres produits ici -->
+      <!-- Plus de produits peuvent être ajoutés ici -->
     </div>
   </div>
 
@@ -110,9 +128,22 @@
     <p>© 2025 FedEx RP - Tous droits réservés</p>
   </footer>
 
-  <!-- Scripts Firebase -->
+  <!-- Formulaire de connexion (masqué initialement) -->
+  <div id="loginForm" style="display: none;">
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Mot de passe" />
+    <button onclick="login()">Se connecter</button>
+  </div>
+
+  <!-- Formulaire d'inscription (masqué initialement) -->
+  <div id="registerForm" style="display: none;">
+    <input type="email" id="registerEmail" placeholder="Email" />
+    <input type="password" id="registerPassword" placeholder="Mot de passe" />
+    <button onclick="register()">S'inscrire</button>
+  </div>
+
+  <!-- Firebase Initialization -->
   <script>
-    // Initialisation Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCZP__MEkfijdjW7rf_uau3dFtFL4jjhj0",
       authDomain: "fedex-logistics-8f671.firebaseapp.com",
@@ -122,10 +153,72 @@
       appId: "1:116664376043:web:8d04276a22e9538c187cae"
     };
     firebase.initializeApp(firebaseConfig);
-
-    // Exemple de gestion des utilisateurs
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // Fonction de connexion utilisateur
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          console.log('Utilisateur connecté:', userCredential.user);
+          alert('Bienvenue!');
+        })
+        .catch(error => {
+          console.error('Erreur de connexion:', error);
+          alert('Erreur de connexion!');
+        });
+    }
+
+    // Fonction d'inscription utilisateur
+    function register() {
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          console.log('Utilisateur inscrit:', userCredential.user);
+          alert('Inscription réussie!');
+        })
+        .catch(error => {
+          console.error('Erreur d\'inscription:', error);
+          alert('Erreur d\'inscription!');
+        });
+    }
+
+    // Afficher les formulaires de connexion et d'inscription
+    function showLoginForm() {
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('registerForm').style.display = 'none';
+    }
+
+    function showRegisterForm() {
+      document.getElementById('registerForm').style.display = 'block';
+      document.getElementById('loginForm').style.display = 'none';
+    }
+
+    // Fonction pour charger les produits depuis Firestore (si tu veux gérer dynamiquement)
+    function loadProducts() {
+      db.collection("products").get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+          const product = doc.data();
+          const productElement = `
+            <div class="product">
+              <img src="${product.image}" alt="${product.name}">
+              <h3>${product.name}</h3>
+              <p>${product.description}</p>
+              <button>Ajouter au panier</button>
+            </div>
+          `;
+          document.getElementById('productCatalog').innerHTML += productElement;
+        });
+      });
+    }
+
+    // Appel de la fonction pour charger les produits
+    loadProducts();
   </script>
 
 </body>
