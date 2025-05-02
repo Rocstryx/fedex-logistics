@@ -1,26 +1,146 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FedEx Logistics</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FedEx RP - Connexion / Inscription</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+
+  <script>
+    // ✅ Ton bloc firebaseConfig (remplacé ici)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXfDqAtNF3A58G6UNvu9TiWZkxrvCvFaM",
+      authDomain: "fedex-logistics-4ee03.firebaseapp.com",
+      projectId: "fedex-logistics-4ee03",
+      storageBucket: "fedex-logistics-4ee03.firebasestorage.app",
+      messagingSenderId: "909219845777",
+      appId: "1:909219845777:web:5de84d4e421d9892d19130"
+    };
+
+    // Initialiser Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
+
+  <!-- Style simple -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #userInfo {
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>FedEx Logistics</h1>
-        <p>Livraisons spéciales, discrètes et rapides</p>
-    </header>
 
-    <section class="content">
-        <h2>Nos Services</h2>
-        <p>Nous proposons des solutions de transport discrètes pour tout type de marchandises sensibles.</p>
-    </section>
+  <div class="container">
+    <h1>FedEx RP</h1>
 
-    <section class="footer">
-        <p>© 2025 FedEx Logistics. Tous droits réservés.</p>
-    </section>
+    <!-- Inscription -->
+    <h2>Inscription</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Mot de passe" />
+    <button onclick="register()">Créer un compte</button>
 
-    <script src="script.js"></script>
+    <!-- Connexion -->
+    <h2>Connexion</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Mot de passe" />
+    <button onclick="login()">Se connecter</button>
+
+    <!-- Déconnexion -->
+    <button onclick="logout()">Se déconnecter</button>
+
+    <p id="userInfo">Non connecté</p>
+  </div>
+
+  <script>
+    // Inscription
+    function register() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => alert("Compte créé avec succès !"))
+        .catch(error => alert("Erreur : " + error.message));
+    }
+
+    // Connexion
+    function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(user => {
+          document.getElementById("userInfo").innerText =
+            "Connecté : " + user.user.email;
+        })
+        .catch(error => alert("Erreur : " + error.message));
+    }
+
+    // Déconnexion
+    function logout() {
+      auth.signOut()
+        .then(() => {
+          document.getElementById("userInfo").innerText = "Déconnecté.";
+        })
+        .catch(error => alert("Erreur : " + error.message));
+    }
+
+    // Vérifie l'état de connexion
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("userInfo").innerText =
+          "Connecté : " + user.email;
+      } else {
+        document.getElementById("userInfo").innerText = "Non connecté";
+      }
+    });
+  </script>
+
 </body>
 </html>
