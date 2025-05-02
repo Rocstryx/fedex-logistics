@@ -88,6 +88,10 @@
       background-color: #0f0f0f;
       color: #888;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
@@ -99,6 +103,7 @@
     <!-- Boutons de connexion/inscription (optionnel pour la page de connexion) -->
     <button onclick="showLoginForm()">Connexion</button>
     <button onclick="showRegisterForm()">Inscription</button>
+    <p id="errorMessage" style="color: red; display: none;">Erreur lors de la connexion, vérifie tes informations.</p>
   </header>
 
   <div class="container">
@@ -129,14 +134,14 @@
   </footer>
 
   <!-- Formulaire de connexion (masqué initialement) -->
-  <div id="loginForm" style="display: none;">
+  <div id="loginForm" class="hidden">
     <input type="email" id="loginEmail" placeholder="Email" />
     <input type="password" id="loginPassword" placeholder="Mot de passe" />
     <button onclick="login()">Se connecter</button>
   </div>
 
   <!-- Formulaire d'inscription (masqué initialement) -->
-  <div id="registerForm" style="display: none;">
+  <div id="registerForm" class="hidden">
     <input type="email" id="registerEmail" placeholder="Email" />
     <input type="password" id="registerPassword" placeholder="Mot de passe" />
     <button onclick="register()">S'inscrire</button>
@@ -160,15 +165,23 @@
     function login() {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
-      
+
+      if (!email || !password) {
+        document.getElementById('errorMessage').innerText = "Veuillez remplir tous les champs!";
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+      }
+
       auth.signInWithEmailAndPassword(email, password)
         .then(userCredential => {
           console.log('Utilisateur connecté:', userCredential.user);
           alert('Bienvenue!');
+          document.getElementById('errorMessage').style.display = 'none';
         })
         .catch(error => {
           console.error('Erreur de connexion:', error);
-          alert('Erreur de connexion!');
+          document.getElementById('errorMessage').innerText = "Erreur de connexion! Vérifie tes informations.";
+          document.getElementById('errorMessage').style.display = 'block';
         });
     }
 
@@ -176,27 +189,37 @@
     function register() {
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
-      
+
+      if (!email || !password) {
+        document.getElementById('errorMessage').innerText = "Veuillez remplir tous les champs!";
+        document.getElementById('errorMessage').style.display = 'block';
+        return;
+      }
+
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
           console.log('Utilisateur inscrit:', userCredential.user);
           alert('Inscription réussie!');
+          document.getElementById('errorMessage').style.display = 'none';
         })
         .catch(error => {
           console.error('Erreur d\'inscription:', error);
-          alert('Erreur d\'inscription!');
+          document.getElementById('errorMessage').innerText = "Erreur d'inscription! Essaie avec un autre email.";
+          document.getElementById('errorMessage').style.display = 'block';
         });
     }
 
     // Afficher les formulaires de connexion et d'inscription
     function showLoginForm() {
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('registerForm').style.display = 'none';
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('errorMessage').style.display = 'none';
     }
 
     function showRegisterForm() {
-      document.getElementById('registerForm').style.display = 'block';
-      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('registerForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('errorMessage').style.display = 'none';
     }
 
     // Fonction pour charger les produits depuis Firestore (si tu veux gérer dynamiquement)
